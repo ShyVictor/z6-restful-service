@@ -29,12 +29,16 @@ public class UserController {
     @Autowired
     private UserService userService;
     @PostMapping("z6/bank-management/account")
-    public ResponseEntity<Object> createUser(@RequestBody User user, @RequestParam(defaultValue = "0", required = false) Double userBalance) {
-        final Optional<User> existingUser = userRepository.findByUserAccount(user.getUserAccount());
+    public ResponseEntity<Object> createUser(@RequestParam(required = true) String userAccount, @RequestParam(defaultValue = "0", required = false) Double userBalance) {
+        final Optional<User> existingUser = userRepository.findByUserAccount(userAccount);
+        System.out.println(existingUser);
             if (existingUser.isPresent())
                 return ResponseHandler.generateResponse("Esse usuario ja esta cadastrado em nosso banco de dados!", HttpStatus.CONFLICT);
+            User user = new User();
+            user.setUserAccount(userAccount);
+            user.setUserBalance(userBalance != null ? userBalance : 0);
             userService.saveUser(user);
-            return ResponseHandler.generateResponse("Cadastro do usuario realizado com sucesso!", HttpStatus.CREATED, user);
+            return ResponseHandler.generateResponse("Cadastro do usuario realizado com sucesso!", HttpStatus.CREATED);
     }
     @PatchMapping("z6/bank-management/accounts/{userAccount}/balance")
     public ResponseEntity<Object> addBalanceToUser(@PathVariable String userAccount, @RequestParam(required = true) Double amount){
@@ -45,7 +49,7 @@ public class UserController {
         userService.saveUser(user.get());
         return ResponseHandler.generateResponse("Saldo atualizado com suesso. Novo saldo abaixo:", HttpStatus.OK, user.get().getUserBalance());
     }
-    @GetMapping("z6/bank/{userAccount}")
+    @GetMapping("z6/bank-management/accounts/{userAccount}/balance")
     public ResponseEntity<Object> getUserByBalance(@PathVariable String userAccount) {
         final Optional<User> user = userRepository.findByUserAccount(userAccount);
         if(user.isEmpty())
