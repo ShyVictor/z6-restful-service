@@ -9,15 +9,15 @@ import java.util.Map;
 public class ResponseHandler {
     public static ResponseEntity<Object> generateResponse(String message, HttpStatus status, Object responseObj) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("Mensagem do servidor:", message);
-        map.put("Código de status:", status.value());
-        map.put("Resultado:", responseObj);
+        map.put("Mensagem do servidor", message);
+        map.put("Código de status", status.value());
+        map.put("Resultado", responseObj);
         return new ResponseEntity<Object>(map,status);
     }
     public static ResponseEntity<Object> generateResponse(String message, HttpStatus status) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("Mensagem do servidor:", message);
-        map.put("Código de status:", status.value());
+        map.put("Mensagem do servidor", message);
+        map.put("Código de status", status.value());
         return new ResponseEntity<Object>(map,status);
     }
 }
