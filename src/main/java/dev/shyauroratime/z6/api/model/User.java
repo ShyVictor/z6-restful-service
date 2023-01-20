@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
 
@@ -22,4 +21,9 @@ public class User {
     @Column(name = "balance")
     private double userBalance;
 
+    public Double addBalanceAmount(Double amount) {
+        final Double newBalance = this.getUserBalance() + amount;
+        this.userBalance = newBalance;
+        return newBalance;
 }
+    }

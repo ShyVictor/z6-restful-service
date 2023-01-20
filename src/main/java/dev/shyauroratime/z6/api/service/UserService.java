@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -30,24 +31,22 @@ public class UserService {
         transactionRepository.save(transaction);
         return userRepository.save(user);
     }
-
-    public User
-    updateUserBalance(User user,
-                     Long id)
-    {
-        User depDB = userRepository.findById(id).get();
-
-        if (Objects.nonNull(user.getUserBalance())) {
-            depDB.setUserBalance(user.getUserBalance());
-        }
-
-
-        return userRepository.save(depDB);
+    public Optional<User> findByUserAccount(String userAccount){
+        return userRepository.findByUserAccount(userAccount);
+    }
+    public void deleteUserByUserAccount(User user){
+        userRepository.delete(user);
+    }
+    public User updateUserBalance(User user, double updatedBalance) {
+        final Transaction transaction = new Transaction().builder()
+                .userAccount(user.getUserAccount())
+                .isCredit(true)
+                .transactionAmount(updatedBalance)
+                .transactionType(updatedBalance > 0 ? TransactionType.DEPOSIT : TransactionType.SHOP)
+                .build();
+        transaction.retrieveDate();
+        transactionRepository.save(transaction);
+        return userRepository.save(user);
     }
 
-    public List<User> fetchDepartmentList()
-    {
-        return (List<User>)
-                userRepository.findAll();
-    }
 }
