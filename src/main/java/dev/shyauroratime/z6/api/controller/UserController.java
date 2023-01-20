@@ -1,5 +1,7 @@
 package dev.shyauroratime.z6.api.controller;
 
+import dev.shyauroratime.z6.api.exception.AccountAlreadyExistException;
+import dev.shyauroratime.z6.api.exception.AccountNotFoundException;
 import dev.shyauroratime.z6.api.model.Transaction;
 import dev.shyauroratime.z6.api.model.TransactionType;
 import dev.shyauroratime.z6.api.model.User;
@@ -26,9 +28,8 @@ public class UserController {
     @PostMapping("z6/bank-management/accounts")
     public ResponseEntity<Object> createUser(@RequestParam(required = true) String userAccount, @RequestParam(defaultValue = "0", required = false) Double userBalance) {
         final Optional<User> existingUser = userService.findByUserAccount(userAccount);
-        System.out.println(existingUser);
             if (existingUser.isPresent())
-                return ResponseHandler.generateResponse("Esse usuario ja esta cadastrado em nosso banco de dados!", HttpStatus.CONFLICT);
+                throw new AccountAlreadyExistException(userAccount);
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserBalance(userBalance != null ? userBalance : 0);
@@ -37,27 +38,24 @@ public class UserController {
     }
     @PatchMapping("z6/bank-management/accounts/{userAccount}/balance")
     public ResponseEntity<Object> addBalanceToUser(@PathVariable String userAccount, @RequestParam(required = true) Double amount){
-        final Optional<User> user = userService.findByUserAccount(userAccount);
-        if (user.isEmpty())
-            return ResponseHandler.generateResponse("Usuario nao existe!", HttpStatus.NOT_FOUND);
-        final Double updatedBalance = user.get().addBalanceAmount(amount);
-        userService.updateUserBalance(user.get(), updatedBalance);
-        return ResponseHandler.generateResponse("Saldo atualizado com sucesso. Novo saldo abaixo:", HttpStatus.OK, user.get().getUserBalance());
+        final User user = userService.findByUserAccount(userAccount)
+                .orElseThrow(() -> new AccountNotFoundException(userAccount));
+        final Double updatedBalance = user.addBalanceAmount(amount);
+        userService.updateUserBalance(user, updatedBalance);
+        return ResponseHandler.generateResponse("Saldo atualizado com sucesso. Novo saldo abaixo:", HttpStatus.OK, user.getUserBalance());
     }
     @GetMapping("z6/bank-management/accounts/{userAccount}/balance")
     public ResponseEntity<Object> getUserByBalance(@PathVariable String userAccount) {
-        final Optional<User> user = userService.findByUserAccount(userAccount);
-        if(user.isEmpty())
-            return ResponseHandler.generateResponse("Essa conta não foi encontrada em nosso banco de dados!", HttpStatus.NOT_FOUND);
-        return ResponseHandler.generateResponse("Consulta realizada com sucesso.", HttpStatus.OK, user.get().getUserBalance());
+        final User user = userService.findByUserAccount(userAccount)
+                .orElseThrow(() -> new AccountNotFoundException(userAccount));
+        return ResponseHandler.generateResponse("Consulta realizada com sucesso.", HttpStatus.OK, user.getUserBalance());
     }
 
     @DeleteMapping("z6/bank-management/accounts")
     public ResponseEntity<Object> deleteByUserAccount(@RequestParam(required = true) String userAccount){
-        final Optional<User> user = userService.findByUserAccount(userAccount);
-        if (user.isEmpty())
-            return ResponseHandler.generateResponse("Usuario nao existe!", HttpStatus.NOT_FOUND);
-        userService.deleteUserByUserAccount(user.get());
+        final User user = userService.findByUserAccount(userAccount)
+                .orElseThrow(() -> new AccountNotFoundException(userAccount));
+        userService.deleteUserByUserAccount(user);
         return ResponseHandler.generateResponse("Usuario deletado com sucesso!", HttpStatus.OK);
 
     }
