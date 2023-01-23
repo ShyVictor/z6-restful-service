@@ -40,7 +40,7 @@ public class UserService {
     public void deleteUserByUserAccount(User user){
         userRepository.delete(user);
     }
-    public User updateUserBalance(User user, double updatedBalance) {
+    public User updateUserBalance(User user, double amountUpdated, double updatedBalance) {
         final Transaction transaction = new Transaction().builder()
                 .userAccount(user.getUserAccount())
                 .isCredit(true)
@@ -49,7 +49,7 @@ public class UserService {
                 .build();
         transaction.retrieveDate();
         transactionRepository.save(transaction);
-        discordService.logTransactionToDiscord(user.getUserAccount(), updatedBalance, updatedBalance > 0 ? TransactionType.DEPOSIT.getValue() : TransactionType.SHOP.getValue());
+        discordService.logTransactionToDiscord(user.getUserAccount(), amountUpdated, updatedBalance > 0 ? TransactionType.DEPOSIT.getValue() : TransactionType.SHOP.getValue());
         return userRepository.save(user);
     }
 

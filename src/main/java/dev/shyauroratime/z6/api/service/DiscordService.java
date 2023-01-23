@@ -24,8 +24,8 @@ public class DiscordService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("content", "[**Z6 BANK** <:dinheiro:967223771800952852>] A conta de ID **"+userAccount+"** (<@"+userAccount+"> realizou uma transação do tipo **"+transactionType.toUpperCase()+"**. " +
-                "Seu valor foi de: R$ "+String.valueOf(amount).replace(".",",")+" reais.");
+        requestBody.put("content", "[**Z6 BANK** <:dinheiro:967223771800952852>] A conta de ID **"+userAccount+"** (<@"+userAccount+">) realizou uma transação do tipo **"+transactionType.toUpperCase()+"**. " +
+                "Seu valor foi de: **R$ "+String.valueOf(amount).replace(".",",")+"** reais.");
         requestBody.put("username", "Z6 Bank");
         requestBody.put("avatar_url", "https://cdn.discordapp.com/attachments/1050025781700612129/1066945360888602694/bmV5LnBuZw.png");
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);

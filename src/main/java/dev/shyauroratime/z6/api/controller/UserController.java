@@ -41,7 +41,7 @@ public class UserController {
         final User user = userService.findByUserAccount(userAccount)
                 .orElseThrow(() -> new AccountNotFoundException(userAccount));
         final Double updatedBalance = user.addBalanceAmount(amount);
-        userService.updateUserBalance(user, updatedBalance);
+        userService.updateUserBalance(user, amount, updatedBalance);
         return ResponseHandler.generateResponse("Saldo atualizado com sucesso. Novo saldo abaixo:", HttpStatus.OK, user.getUserBalance());
     }
     @GetMapping("z6/bank-management/accounts/{userAccount}/balance")
