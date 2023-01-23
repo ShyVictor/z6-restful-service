@@ -1,4 +1,5 @@
 package dev.shyauroratime.z6.api.service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import java.util.Map;
 @Service
 public class DiscordService {
 
+    @Autowired
     private final RestTemplate restTemplate;
 
     public DiscordService(RestTemplate restTemplate) {
