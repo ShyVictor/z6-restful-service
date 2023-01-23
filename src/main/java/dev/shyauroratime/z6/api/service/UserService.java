@@ -18,6 +18,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private DiscordService discordService;
 
     public User saveUser(User user)
     {
@@ -28,6 +30,7 @@ public class UserService {
                 .transactionType(TransactionType.CREATED)
                 .build();
         transaction.retrieveDate();
+
         transactionRepository.save(transaction);
         return userRepository.save(user);
     }
@@ -46,6 +49,7 @@ public class UserService {
                 .build();
         transaction.retrieveDate();
         transactionRepository.save(transaction);
+        discordService.logTransactionToDiscord(user.getUserAccount(), updatedBalance, updatedBalance > 0 ? TransactionType.DEPOSIT.getValue() : TransactionType.SHOP.getValue());
         return userRepository.save(user);
     }
 
